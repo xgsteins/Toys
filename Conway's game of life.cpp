@@ -2,21 +2,22 @@
 #include <unistd.h>
 using namespace std;
 const int maxn = 50;
-bool cell[maxn][maxn], tmp[maxn][maxn];
+bool cell[2][maxn][maxn];
+int ind;
 
 int itX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 int itY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
 inline bool OutOfBounds(int x, int y) { return !(x >= 0 && x < maxn && y >= 0 && y < maxn); }
 
-bool judge(int x, int y)
+bool judge(int x, int y, int ind)
 {
-    bool nowState = cell[x][y];
+    bool nowState = cell[ind][x][y];
     int survivingCellNum = 0;
     for (int i = 0; i < 8; i++)
     {
         if (OutOfBounds(x + itX[i], y + itY[i]))                    continue;
-        survivingCellNum += (cell[x + itX[i]][y + itY[i]] ? 1:0);
+        survivingCellNum += (cell[ind][x + itX[i]][y + itY[i]] ? 1:0);
     }
     if (nowState)
     {
@@ -38,7 +39,7 @@ int main()
         {
             int p = rand() % 100;
             if (p < 63)                 //  活的细胞产生概率
-                cell[i][j] = true;
+                cell[ind][i][j] = true;
         }
     }
     while (1)
@@ -47,7 +48,7 @@ int main()
         {
             for (int j = 0; j < maxn; j++)
             {
-                cout << (cell[i][j] ? '*' : '.');
+                cout << (cell[ind][i][j] ? "[]" : "  ");
             }
             cout << endl;
         }
@@ -56,11 +57,11 @@ int main()
         {
             for (int j = 0; j < maxn; j++)
             {
-                tmp[i][j] = judge(i, j);
+                cell[ind^1][i][j] = judge(i, j, ind);
             }
         }
-        memcpy(cell, tmp, sizeof(cell));
         usleep(50000);
         system("clear");
+        ind ^= 1;
     }
 }
